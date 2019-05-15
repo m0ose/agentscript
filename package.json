@@ -43,7 +43,8 @@
     },
     "Note": "shx includes shelljs; tap-xunit for circleci/ava.",
     "dependencies": {
-        "three": "mrdoob/three.js"
+        "three": "mrdoob/three.js",
+        "utm": "ssh://git@github.com:TimothyGu/utm.git"
     },
     "devDependencies": {
         "ava": "0.25.0",
