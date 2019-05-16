@@ -13,7 +13,7 @@ const params = {
     minX: 10,
     maxY: 30,
     minY: 10,
-    steps: 500,
+    steps: 50000,
     shapeSize: 0.01,
     world: null,
 }
@@ -31,7 +31,7 @@ function toFromModelCoords(centerX, centerY, scaleX=1, scaleY=1) {
    }
 }
 
-async function loadGeojson(geojsonRef) {
+async function processGeojson(geojsonRef) {
     const geojson = await util.xhrPromise(geojsonRef)
     const json = JSON.parse(geojson)
     const lines = json.features.filter((a)=>{return a.geometry.type.toLowerCase() == 'linestring'})
@@ -68,7 +68,7 @@ function getBounds(coordinates) {
 
 
 async function main() {
-    let gj = await loadGeojson('../tests/data/JMTR2019/JMTR_2019_15mile.geojson')
+    let gj = await processGeojson('../tests/data/JMTR2019/JMTR_2019_15mile.geojson')
     console.log(gj)
     params.world = JmtrModel.defaultWorld()
     //params.world = Object.assign(params.world, gj.bounds)
@@ -82,7 +82,7 @@ async function main() {
     const linkColor = Color.typedColor(255, 255, 255)
     const model = new JmtrModel(params.world )
     model.population = params.population
-    model.setup()
+    model.setup(gj)
     const view = new ThreeView(document.body, params.world)
     // Just draw patches once:
     view.createPatchPixels(i => Color.randomGrayPixel(0, 100))
@@ -91,9 +91,9 @@ async function main() {
     util.timeoutLoop(() => {
         model.step()
         model.tick()
-        view.drawTurtles(model.turtles, (t, i) => ({
+        view.drawTurtles(model.runners, (t, i) => ({
             sprite: view.getSprite('dart', colors25[i % 25]),
-            size: params.shapeSize,
+            size: 3,
         }))
         view.drawLinks(model.links, { color: linkColor.webgl })
         view.draw()
